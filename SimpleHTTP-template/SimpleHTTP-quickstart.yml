@@ -1,0 +1,25 @@
+# Put all your resources under `resources:`. For each resource, you need:
+# - The type of resource. In this example, the type is a Compute VM instance.
+# - An internal name for the resource.
+# - The properties for the resource. In this example, for VM instances, you add
+#   the machine type, a boot disk, network information, and so on.
+#
+# For a list of supported resources,
+# see https://cloud.google.com/deployment-manager/docs/configuration/supported-resource-types.
+imports:
+- path: vm-template.jinja
+
+resources:
+- name: apache-vm-test
+  type: vm-template.jinja
+  properties:
+    zone: us-west1-b
+    startup-script: |
+      #!/bin/bash
+      INSTANCE=$(curl http://metadata.google.internal/computeMetadata/v1/instance/hostname -H "Metadata-Flavor: Google")
+          echo "<html><header><title>Hello from Deployment Manager!</title></header>
+          <body><h2>Hello from $INSTANCE</h2>
+          <p>Deployment Manager bids you good day!</p>
+          </body>
+          </html>" > index.html
+          python -m SimpleHTTPServer 80
